@@ -1,34 +1,27 @@
 import { GoogleGenAI } from "@google/genai";
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+// 1. ตรวจสอบว่ามี API Key อยู่หรือไม่ (API_KEY ถูกกำหนดใน vite.config.ts)
+const API_KEY = process.env.API_KEY;
 
-export const generateSmartDescription = async (
-  title: string,
-  baseNotes: string,
-  location: string
-): Promise<string> => {
-  try {
-    const modelId = 'gemini-2.5-flash';
-    const prompt = `
-      You are a hype-man for a football (soccer) meetup app.
-      Create a short, exciting, and engaging description (max 50 words) for a football match.
-      Use emojis. make it sound fun and inviting.
-      
-      Event Title: ${title}
-      Location: ${location}
-      User Notes: ${baseNotes}
-      
-      Return ONLY the description text.
-    `;
+// 2. เริ่มต้นใช้งาน AI instance เฉพาะเมื่อมี Key
+const ai = API_KEY ? new GoogleGenAI({ apiKey: API_KEY }) : null;
 
-    const response = await ai.models.generateContent({
-      model: modelId,
-      contents: prompt,
-    });
+export const generateSmartDescription = async (prompt: string): Promise<string> => {
+    // 3. ตรวจสอบว่าบริการ AI พร้อมใช้งานหรือไม่
+    if (!ai) {
+        console.error("Gemini API Key is missing. Skipping AI feature.");
+        return "Sorry, the AI description generator is currently unavailable (API Key missing).";
+    }
 
-    return response.text || "Join us for an awesome game! ⚽️🔥";
-  } catch (error) {
-    console.error("Error generating description:", error);
-    return baseNotes || "Join us for a game!";
-  }
+    try {
+        const response = await ai.models.generateContent({
+            model: "gemini-2.5-flash",
+            contents: prompt,
+        });
+
+        return response.text.trim();
+    } catch (error) {
+        console.error("Error generating smart description:", error);
+        return "An error occurred while generating the description.";
+    }
 };
