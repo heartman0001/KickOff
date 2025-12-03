@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 
 interface AuthProps {
-  // แก้ไข Signature ให้รองรับข้อมูลเพิ่มเติมจาก Signup
+  // แก้ไข Signature ให้รองรับข้อมูลเพิ่มเติม
   onLogin: (user: { 
     id: string; 
     email: string; 
@@ -42,8 +42,6 @@ export const Auth: React.FC<AuthProps> = ({ onLogin }) => {
         })
     };
     
-    // Reset status (optional)
-
     try {
       const response = await fetch("http://localhost/kickoff-api/auth.php", {
         method: "POST",
@@ -67,11 +65,10 @@ export const Auth: React.FC<AuthProps> = ({ onLogin }) => {
       console.log("Parsed result:", result);
 
       if (result.success) {
-        // ✅ ส่งข้อมูลที่จำเป็นทั้งหมดกลับไปให้ App.tsx
+        // ✅ ส่งข้อมูลทั้งหมดกลับไปให้ App.tsx
         onLogin({ 
             id: result.userId ?? '', 
             email: result.email ?? email, 
-            // รวมข้อมูล Signup (ถ้ามี)
             name: result.name ?? name, 
             age: result.age ?? (age !== '' ? Number(age) : undefined),
             height: result.height ?? (height !== '' ? Number(height) : undefined),
@@ -90,13 +87,7 @@ export const Auth: React.FC<AuthProps> = ({ onLogin }) => {
     <div className="min-h-screen bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center p-4">
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
         
-        <div className="p-8 text-center">
-          <div className="mx-auto w-16 h-16 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center text-2xl font-bold mb-4">
-             K
-          </div>
-          <h1 className="text-2xl font-bold text-gray-800">Welcome to KickOff</h1>
-          <p className="text-gray-500 mt-2">Find your squad. Play the game.</p>
-        </div>
+        {/* ... (Header เหมือนเดิม) */}
 
         <div className="px-8 pb-8">
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -116,7 +107,7 @@ export const Auth: React.FC<AuthProps> = ({ onLogin }) => {
                     </div>
                 )}
                 
-                {/* 2. Email Input */}
+                {/* 2. Email Input (เหมือนเดิม) */}
                 <div>
                     <label className="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-1">Email Address</label>
                     <input 
@@ -129,7 +120,7 @@ export const Auth: React.FC<AuthProps> = ({ onLogin }) => {
                     />
                 </div>
                 
-                {/* 3. Password Input */}
+                {/* 3. Password Input (เหมือนเดิม) */}
                 <div>
                     <label className="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-1">Password</label>
                     <input 

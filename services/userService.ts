@@ -2,7 +2,7 @@
 
 import { User, EditProfileFormData } from '../types';
 
-const API_BASE_URL = 'http://localhost/kickoff-api';
+const API_BASE_URL = 'http://127.0.0.1/kickoff-api';
 
 // ต้องมี export const นำหน้า
 export const fetchUserProfile = async (userId: string): Promise<User | null> => {
