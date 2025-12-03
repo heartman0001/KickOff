@@ -1,0 +1,7 @@
+{
+  "name": "KickOff - Football Meetups",
+  "description": "A social platform to organize, join, and manage football matches with friends. Features AI-powered match descriptions and a vibrant orange theme.",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}
