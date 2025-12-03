@@ -14,7 +14,9 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose, cur
   const [formData, setFormData] = useState<EditProfileFormData>({
     name: '',
     avatar: '',
-    age: undefined
+    age: undefined,
+    height: undefined,
+    weight: undefined,
   });
 
   useEffect(() => {
@@ -22,7 +24,9 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose, cur
       setFormData({
         name: currentUser.name,
         avatar: currentUser.avatar,
-        age: currentUser.age
+        age: currentUser.age,
+        height: currentUser.height,
+        weight: currentUser.weight,
       });
     }
   }, [currentUser, isOpen]);
@@ -102,6 +106,28 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose, cur
                 onChange={(e) => setFormData({ ...formData, age: parseInt(e.target.value) || undefined })}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 outline-none"
                 placeholder="e.g. 24"
+                />
+            </div>
+            <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Height (cm)</label>
+                <input
+                type="number"
+                min="50"
+                value={formData.height || ''}
+                onChange={(e) => setFormData({ ...formData, height: parseInt(e.target.value) || undefined })}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 outline-none"
+                placeholder="e.g. 175"
+                />
+            </div>
+            <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Weight (kg)</label>
+                <input
+                type="number"
+                min="10"
+                value={formData.weight || ''}
+                onChange={(e) => setFormData({ ...formData, weight: parseInt(e.target.value) || undefined })}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 outline-none"
+                placeholder="e.g. 70"
                 />
             </div>
           </div>

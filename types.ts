@@ -11,6 +11,8 @@ export interface User {
   avatar: string;
   email: string;
   age?: number;
+  height?: number; // เพิ่ม: ส่วนสูง (cm)
+  weight?: number; // เพิ่ม: น้ำหนัก (kg)
 }
 
 export interface Comment {
@@ -53,4 +55,6 @@ export interface EditProfileFormData {
   name: string;
   avatar: string;
   age?: number;
+  height?: number; // เพิ่ม
+  weight?: number; // เพิ่ม
 }

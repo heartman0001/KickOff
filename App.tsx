@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Navbar } from './components/Navbar';
 import { Auth } from './components/Auth';
@@ -8,13 +7,14 @@ import { ProfileModal } from './components/ProfileModal';
 import { MeetupDetailsModal } from './components/MeetupDetailsModal';
 import { FilterBar } from './components/FilterBar';
 import { Meetup, User, MeetupStatus, CreateMeetupFormData, EditProfileFormData } from './types';
-import { MOCK_USERS, INITIAL_MEETUPS, CURRENT_USER } from './constants';
+import { MOCK_USERS, INITIAL_MEETUPS } from './constants';
+// ต้อง Import Service ที่ใช้เรียก API (สมมติว่าคุณได้สร้างไฟล์นี้แล้ว)
+import { fetchUserProfile, updateProfile } from './services/userService'; 
 
 const App: React.FC = () => {
   const [user, setUser] = useState<User | null>(null);
-  // Maintain a local state of all users to handle profile updates reflecting in participants list
-  const [allUsers, setAllUsers] = useState<User[]>(MOCK_USERS);
-  
+  // คง MOCK_USERS ไว้ใช้กับ MeetupCard (participants) ชั่วคราว
+  const allUsers = MOCK_USERS; 
   const [meetups, setMeetups] = useState<Meetup[]>(INITIAL_MEETUPS);
   
   // Modals
@@ -28,20 +28,35 @@ const App: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
 
   // Handlers
-  const handleLogin = async (email: string, password: string) => {
-  const response = await fetch("http://localhost/kickoff-api/auth.php", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email, password, mode: "login" })
-  });
-
-  const result = await response.json();
-  if (result.success) {
-    setUser({ id: result.userId, email: result.email }); // ใช้ข้อมูลจาก backend
-  } else {
-    alert(result.message);
-  }
-};
+  // <<< FIX: เพิ่ม async ที่นี่
+  const handleLogin = async (loggedInUser: { 
+      id: string; 
+      email: string; 
+      name?: string; 
+      age?: number;
+      height?: number;
+      weight?: number;
+  }) => {
+    
+    // 1. เรียก API เพื่อดึงข้อมูล Profile ฉบับเต็มจาก DB
+    const fullUserDetails = await fetchUserProfile(loggedInUser.id);
+    
+    if (fullUserDetails) {
+        // 2. ถ้าพบข้อมูลใน DB (Login/Signup สำเร็จ)
+        setUser(fullUserDetails);
+    } else {
+        // 3. Fallback: กรณีผู้ใช้ใหม่ หรือ API fetch ล้มเหลว (ใช้ข้อมูลที่มีอยู่)
+        setUser({ 
+            id: loggedInUser.id, 
+            email: loggedInUser.email, 
+            name: loggedInUser.name || "KickOff Player", 
+            avatar: "https://picsum.photos/seed/default/100/100", 
+            age: loggedInUser.age,
+            height: loggedInUser.height,
+            weight: loggedInUser.weight,
+        });
+    }
+  };
 
 
   const handleLogout = () => {
@@ -49,15 +64,19 @@ const App: React.FC = () => {
     setCurrentView('feed');
   };
 
-  const handleUpdateProfile = (data: EditProfileFormData) => {
+  const handleUpdateProfile = async (data: EditProfileFormData) => {
       if (!user) return;
       
-      // Update current user state
-      const updatedUser = { ...user, ...data };
-      setUser(updatedUser);
+      // 1. เรียก API เพื่ออัปเดตข้อมูลในฐานข้อมูล
+      const updatedUser = await updateProfile(user.id, data);
 
-      // Update the "Database" of users so avatars/ages update in cards/details
-      setAllUsers(prev => prev.map(u => u.id === user.id ? updatedUser : u));
+      if (updatedUser) {
+          // 2. ถ้าอัปเดตสำเร็จ ให้อัปเดต State ของผู้ใช้ปัจจุบันด้วยข้อมูลที่ได้จาก Server
+          setUser(updatedUser);
+          alert('Profile updated successfully!');
+      } else {
+          alert('Failed to update profile. Please try again.');
+      }
   };
 
   const handleJoin = (meetupId: string) => {
@@ -161,6 +180,7 @@ const App: React.FC = () => {
   });
 
   if (!user) {
+    // Auth.tsx จะเรียก onLogin ด้วย Object ข้อมูลผู้ใช้
     return <Auth onLogin={handleLogin} />;
   }
 
