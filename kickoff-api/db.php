@@ -5,7 +5,7 @@
 $host = 'localhost';
 $db   = 'kickoff_db'; 
 $user = 'root';       
-$pass = '';           
+$pass = '1';           
 $charset = 'utf8mb4';
 
 $dsn = "mysql:host=$host;dbname=$db;charset=$charset";

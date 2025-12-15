@@ -43,7 +43,7 @@ export const Auth: React.FC<AuthProps> = ({ onLogin }) => {
     };
     
     try {
-      const response = await fetch("http://localhost/kickoff-api/auth.php", {
+      const response = await fetch("/kickoff-api/auth.php", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)
